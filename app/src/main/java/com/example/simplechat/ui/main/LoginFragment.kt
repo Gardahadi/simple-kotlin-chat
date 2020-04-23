@@ -17,19 +17,17 @@ class LoginFragment : Fragment() {
         fun newInstance() = LoginFragment()
     }
 
-//    private lateinit var viewModel: ChatViewModel
+//    private lateinit var viewModel: LoginViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         // Inflate the layout for this fragment
-
-        // Snippet from "Navigate to the next Fragment" section goes here.
-
         val view = inflater.inflate(R.layout.login_fragment, container, false)
 
-        // Set listener on Next Button
-        val next = view.next_button
-        next.setOnClickListener {
+        // Set listener on Log-in Button
+        val button = view.next_button
+        button.setOnClickListener {
             if(!isPasswordValid(password_edit_text.text!!) && !isEmailValid(email_edit_text.text!!) ){
                 password_text_input.error = "Log in info is wrong"
             } else{

@@ -3,4 +3,5 @@
     <string name="login_field_1">Email</string>
     <string name="login_field_2">Password</string>
     <string name="login_button">Log in</string>
+    <string name="menu_item_1">Logout</string>
 </resources>
