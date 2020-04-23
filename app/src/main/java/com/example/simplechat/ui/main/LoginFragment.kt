@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.simplechat.R
+import com.example.simplechat.interfaces.NavigationHost
 import kotlinx.android.synthetic.main.login_fragment.*
 import kotlinx.android.synthetic.main.login_fragment.view.*
 
@@ -16,8 +17,6 @@ class LoginFragment : Fragment() {
     companion object {
         fun newInstance() = LoginFragment()
     }
-
-//    private lateinit var viewModel: LoginViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -28,19 +27,19 @@ class LoginFragment : Fragment() {
         // Set listener on Log-in Button
         val button = view.next_button
         button.setOnClickListener {
-            if(!isPasswordValid(password_edit_text.text!!) && !isEmailValid(email_edit_text.text!!) ){
-                password_text_input.error = "Log in info is wrong"
+            val password = password_edit_text.text!!
+            val email = email_edit_text.text!!
+            if(!isPasswordValid(password) || !isEmailValid(email) ){
+                it.password_text_input.error = "Log-in info is wrong"
             } else{
-                password_text_input.error = null
                 // Navigate to Next Activity
-
+                (activity as NavigationHost).navigateTo(ChatroomFragment(), false)
             }
-
-
         }
 
         return view
     }
+
 
     // Hardcoded validation function for password
     private fun isPasswordValid(text: Editable?): Boolean {
@@ -51,6 +50,5 @@ class LoginFragment : Fragment() {
     private fun isEmailValid(text: Editable?) : Boolean {
         return text != null && text.toString() == "jarjit"
     }
-
 
 }
