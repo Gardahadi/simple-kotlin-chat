@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Simple Chat</string>
+    <string name="login_field_1">Email</string>
+    <string name="login_field_2">Password</string>
+    <string name="login_button">Log in</string>
 </resources>
