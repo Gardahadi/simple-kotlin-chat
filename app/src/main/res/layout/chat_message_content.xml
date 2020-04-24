@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:elevation="5dp"
-            app:cardBackgroundColor="@color/colorAccent"
+            app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="8dp"
             app:contentPadding="12dp">
 

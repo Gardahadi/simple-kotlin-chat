@@ -1,17 +1,14 @@
 package com.example.simplechat.ui.main
 
-import android.app.Activity
-import androidx.lifecycle.ViewModelProviders
+
 import android.os.Bundle
 import android.os.Handler
 import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Adapter
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
