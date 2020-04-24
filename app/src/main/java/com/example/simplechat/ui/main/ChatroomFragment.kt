@@ -3,9 +3,7 @@ package com.example.simplechat.ui.main
 
 import android.os.Bundle
 import android.os.Handler
-import android.text.Html
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,22 +12,25 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.*
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplechat.R
 import com.example.simplechat.interfaces.NavigationHost
-
-
 import com.example.simplechat.models.MessageModel
 import com.example.simplechat.models.UserModel
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.chatroom_fragment.*
 import kotlinx.android.synthetic.main.toolbar_content.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 class ChatroomFragment : Fragment() {
     companion object {
@@ -71,6 +72,7 @@ class ChatroomFragment : Fragment() {
         )
         setupViews()
         initConversationMessages()
+        initAvatar()
     }
 
 //    override fun onResume() {
@@ -127,11 +129,19 @@ class ChatroomFragment : Fragment() {
         if (!message.isEmpty())
         {
             user?.let {
+                // Get Current Date
+                val currentDate = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+                val formattedDate = currentDate.format(formatter)
+                val messageId : String = (messageList.size+1).toString()
+                //Write Message to firebase
+                val messageToWriteRef : DatabaseReference = databaseRef.child("Messages").child(messageId)
+                messageToWriteRef.setValue(MessageModel(message, "1", formattedDate))
 
-                val messageModel = MessageModel(message, "1")
-                messageList.add(messageModel)
-                messageAdapter?.notifyItemInserted(messageList.size-1)
-                recyclerMessages.scrollToPosition(messageList.size-1)
+//                val messageModel = MessageModel(message, "1", formattedDate)
+//                messageList.add(messageModel)
+//                messageAdapter?.notifyItemInserted(messageList.size-1)
+//                recyclerMessages.scrollToPosition(messageList.size-1)
 
                 // Clear the message box
                 txtMessageBox.setText("")
@@ -223,20 +233,31 @@ class ChatroomFragment : Fragment() {
         val messageListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 messageList.clear()
-                Log.d("DEBUG_FB", "MASUK")
                 dataSnapshot.children.mapNotNullTo(messageList) {
                     it.getValue<MessageModel>(MessageModel::class.java)
 
                 }
-                Log.d("DEBUG_FB", messageList.toString())
                 messageAdapter?.notifyDataSetChanged()
+                recyclerMessages.scrollToPosition(messageList.size-1)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
                 println("loadPost:onCancelled ${databaseError.toException()}")
             }
         }
-        databaseRef.child("Messages").addListenerForSingleValueEvent(messageListener)
+        databaseRef.child("Messages").addValueEventListener(messageListener)
+    }
+    private fun initAvatar() {
+        val avatarListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.d("PRINT_AVATAR", dataSnapshot.child("avatar").value.toString())
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("loadPost:onCancelled ${databaseError.toException()}")
+            }
+        }
+        databaseRef.child("Users").child("2").addListenerForSingleValueEvent(avatarListener)
     }
 
 }
