@@ -69,13 +69,14 @@ class ChatroomFragment : Fragment() {
             status = "Last Active Yesterday",
             photoUrl = ""
         )
+        setupViews()
+        initConversationMessages()
     }
 
-    override fun onResume() {
-        super.onResume()
-        setupViews()
-        loadConversationMessages()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//
+//    }
 
 
     fun setupViews()
@@ -138,7 +139,7 @@ class ChatroomFragment : Fragment() {
         }
     }
 
-    fun loadConversationMessages()
+    fun initConversationMessages()
     {
         user?.let {
 
@@ -147,7 +148,7 @@ class ChatroomFragment : Fragment() {
             recyclerMessages.visibility = View.GONE
 
             Handler().postDelayed(Runnable {
-//                loadDummyMessages()
+                //  Read messages from firebase
                 initMessages()
 
                 // Hide Progress bar
@@ -156,16 +157,6 @@ class ChatroomFragment : Fragment() {
 
             }, 1*1000)          // 1 seconds dummy delay
         }
-    }
-
-
-    fun loadDummyMessages()
-    {
-        messageList.add(MessageModel("Hi", "1", "2020-04-24 19:00"))
-        messageList.add(MessageModel("How are you?", "1", "2020-04-24 20:00"))
-        messageList.add(MessageModel("I'm fine", "0", "2020-04-24 20:01"))
-        messageList.add(MessageModel("How about ya?", "0", "2020-04-24 20:05"))
-        messageAdapter?.notifyDataSetChanged()
     }
 
     // Recycler Adapter
