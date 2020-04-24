@@ -4,6 +4,7 @@ package com.example.simplechat.ui.main
 import android.os.Bundle
 import android.os.Handler
 import android.text.Html
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,9 +23,11 @@ import com.example.simplechat.interfaces.NavigationHost
 import com.example.simplechat.models.MessageModel
 import com.example.simplechat.models.UserModel
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.chat_message_content.*
 import kotlinx.android.synthetic.main.chatroom_fragment.*
 import kotlinx.android.synthetic.main.toolbar_content.*
 
@@ -45,6 +48,9 @@ class ChatroomFragment : Fragment() {
     val messageList = ArrayList<MessageModel>()
     var messageAdapter : ChatMessagesAdapter? = null
 
+    val database = Firebase.database
+    val databaseRef = database.reference
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,15 +58,8 @@ class ChatroomFragment : Fragment() {
         val view = inflater.inflate(R.layout.chatroom_fragment, container, false)
         // Set up the toolbar_menu.
         // Write a message to the database
-        val database = Firebase.database
-        val myRef = database.reference
-
-
-
-
         return view
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -148,7 +147,8 @@ class ChatroomFragment : Fragment() {
             recyclerMessages.visibility = View.GONE
 
             Handler().postDelayed(Runnable {
-                loadDummyMessages()
+//                loadDummyMessages()
+                initMessages()
 
                 // Hide Progress bar
                 progressLoading.visibility = View.GONE
@@ -209,6 +209,7 @@ class ChatroomFragment : Fragment() {
                 if (messageModel.sender_id == "1")
                 {
                     cardMyMessage.visibility = View.VISIBLE
+                    dateMyMessage.visibility = View.VISIBLE
                     cardOtherMessage.visibility = View.GONE
                     dateOtherMessage.visibility = View.GONE
                     txtMyMessage.text = messageModel.content
@@ -218,12 +219,33 @@ class ChatroomFragment : Fragment() {
                 {
                     cardMyMessage.visibility = View.GONE
                     dateMyMessage.visibility = View.GONE
+                    dateOtherMessage.visibility = View.VISIBLE
                     cardOtherMessage.visibility = View.VISIBLE
                     txtOtherMessage.text = messageModel.content
                     dateOtherMessage.text = messageModel.date
                 }
             }
         }
+    }
+
+    private fun initMessages() {
+        val messageListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                messageList.clear()
+                Log.d("DEBUG_FB", "MASUK")
+                dataSnapshot.children.mapNotNullTo(messageList) {
+                    it.getValue<MessageModel>(MessageModel::class.java)
+
+                }
+                Log.d("DEBUG_FB", messageList.toString())
+                messageAdapter?.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("loadPost:onCancelled ${databaseError.toException()}")
+            }
+        }
+        databaseRef.child("Messages").addListenerForSingleValueEvent(messageListener)
     }
 
 }
