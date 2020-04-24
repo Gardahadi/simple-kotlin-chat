@@ -12,13 +12,11 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplechat.R
+import com.example.simplechat.interfaces.NavigationHost
 
 
 import com.example.simplechat.models.MessageModel
@@ -28,6 +26,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.chat_message_content.*
 import kotlinx.android.synthetic.main.chatroom_fragment.*
+import kotlinx.android.synthetic.main.toolbar_content.*
 
 class ChatroomFragment : Fragment() {
     companion object {
@@ -39,6 +38,7 @@ class ChatroomFragment : Fragment() {
 
     lateinit var txtMessageBox: AppCompatEditText
     lateinit var btnSend: AppCompatImageView
+    lateinit var btnLogout : AppCompatButton
     lateinit var recyclerMessages: RecyclerView
     lateinit var progressLoading: ProgressBar
 
@@ -92,6 +92,11 @@ class ChatroomFragment : Fragment() {
         var chatToolbar : Toolbar? = toolbar
         chatToolbar?.inflateMenu(R.menu.toolbar_menu)
         (activity as AppCompatActivity).setSupportActionBar(chatToolbar)
+
+        // Set-up Logout Button
+        btnLogout.setOnClickListener{
+            (activity as NavigationHost).navigateTo(LoginFragment(), false)
+        }
 
         // Set-up Recycler View
         messageAdapter = ChatMessagesAdapter()
