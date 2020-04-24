@@ -62,5 +62,17 @@
                 android:maxLines="1"
                 android:textSize="12sp" />
 
+
+
     </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+        <Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="Log out"
+        />
+    </FrameLayout>
+
 </RelativeLayout>

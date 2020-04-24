@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplechat.R
@@ -83,11 +84,14 @@ class ChatroomFragment : Fragment() {
         // Get Views
         txtMessageBox = txt_message_box
         btnSend = img_send
+        btnLogout = logout_button
         recyclerMessages = recycler_messages
         progressLoading = progress_loading
 
         // Set-up Toolbar
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        var chatToolbar : Toolbar? = toolbar
+        chatToolbar?.inflateMenu(R.menu.toolbar_menu)
+        (activity as AppCompatActivity).setSupportActionBar(chatToolbar)
 
         // Set-up Recycler View
         messageAdapter = ChatMessagesAdapter()
