@@ -25,18 +25,17 @@ import com.example.simplechat.models.UserModel
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.chat_message_content.*
 import kotlinx.android.synthetic.main.chatroom_fragment.*
-import kotlinx.android.synthetic.main.chatroom_fragment.view.*
-import kotlinx.android.synthetic.main.chatroom_fragment.view.txt_message_box
 
 class ChatroomFragment : Fragment() {
     companion object {
         fun newInstance() = ChatroomFragment()
     }
 
-
-
+    // Initialize view variables (TO DO : Implement in ViewModel)
     var user: UserModel? = null
+
     lateinit var txtMessageBox: AppCompatEditText
     lateinit var btnSend: AppCompatImageView
     lateinit var recyclerMessages: RecyclerView
@@ -53,9 +52,11 @@ class ChatroomFragment : Fragment() {
         // Set up the toolbar_menu.
         // Write a message to the database
         val database = Firebase.database
-        val myRef = database.getReference("message")
+        val myRef = database.reference
 
-        myRef.setValue("Hello, World!")
+
+
+
         return view
     }
 
@@ -64,7 +65,7 @@ class ChatroomFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         user = UserModel (
             uid = "1",
-            name = "Mail",
+            name = "Mail bin Ismail",
             status = "Last Active Yesterday",
             photoUrl = ""
         )
@@ -85,17 +86,15 @@ class ChatroomFragment : Fragment() {
         recyclerMessages = recycler_messages
         progressLoading = progress_loading
 
-        // Toolbar
+        // Set-up Toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        setUserStatus(user?.status == "online")
 
-
-        // Recycler View
+        // Set-up Recycler View
         messageAdapter = ChatMessagesAdapter()
         recyclerMessages.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
         recyclerMessages.adapter = messageAdapter
 
-        // Message Box
+        // Set-up Message Box
         txtMessageBox.setOnEditorActionListener { v, actionId, event ->
             when(actionId)
             {
@@ -107,7 +106,7 @@ class ChatroomFragment : Fragment() {
             return@setOnEditorActionListener false
         }
 
-        // Send Button
+        // Set-up Send Button
         val toast = Toast.makeText(this.context, "sent message", 2)
         btnSend.setOnClickListener {
             toast.show()
@@ -115,26 +114,12 @@ class ChatroomFragment : Fragment() {
         }
     }
 
-    private fun setUserStatus(isOnline: Boolean)
-    {
-        if (isOnline)
-        {
-            (activity as AppCompatActivity).supportActionBar?.subtitle = Html.fromHtml("<font color='#149214'>online</font>")
-        }
-        else
-        {
-            (activity as AppCompatActivity).supportActionBar?.subtitle = Html.fromHtml("<font color='#575757'>offline</font>")
-        }
-    }
-
     private fun sendMessage(message: String) {
         if (!message.isEmpty())
         {
             user?.let {
-                val receiverID: String = it.uid
-                val messageText = message
 
-                val messageModel = MessageModel(message, true)
+                val messageModel = MessageModel(message, "1")
                 messageList.add(messageModel)
                 messageAdapter?.notifyItemInserted(messageList.size-1)
                 recyclerMessages.scrollToPosition(messageList.size-1)
@@ -167,15 +152,10 @@ class ChatroomFragment : Fragment() {
 
     fun loadDummyMessages()
     {
-        messageList.add(MessageModel("Hi", true))
-        messageList.add(MessageModel("How are you?", true))
-        messageList.add(MessageModel("I'm fine", false))
-        messageList.add(MessageModel("How about ya?", false))
-        messageList.add(MessageModel("Fine", true))
-        messageList.add(MessageModel("What ya upto these days?", true))
-        messageList.add(MessageModel("Same ol' job dude!", false))
-        messageList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", false))
-        messageList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", true))
+        messageList.add(MessageModel("Hi", "1", "2020-04-24 19:00"))
+        messageList.add(MessageModel("How are you?", "1", "2020-04-24 20:00"))
+        messageList.add(MessageModel("I'm fine", "0", "2020-04-24 20:01"))
+        messageList.add(MessageModel("How about ya?", "0", "2020-04-24 20:05"))
         messageAdapter?.notifyDataSetChanged()
     }
 
@@ -199,6 +179,8 @@ class ChatroomFragment : Fragment() {
         {
             var txtMyMessage: AppCompatTextView
             var txtOtherMessage: AppCompatTextView
+            var dateMyMessage: AppCompatTextView
+            var dateOtherMessage: AppCompatTextView
             var cardMyMessage: MaterialCardView
             var cardOtherMessage: MaterialCardView
 
@@ -208,22 +190,28 @@ class ChatroomFragment : Fragment() {
                 txtOtherMessage = itemView.findViewById(R.id.txtOtherMessage)
                 cardMyMessage = itemView.findViewById(R.id.cardChatMyMessage)
                 cardOtherMessage = itemView.findViewById(R.id.cardChatOtherMessage)
+                dateMyMessage = itemView.findViewById(R.id.userDate)
+                dateOtherMessage = itemView.findViewById(R.id.otherDate)
             }
 
 
             fun bindItem(messageModel: MessageModel)
             {
-                if (messageModel.isMine)
+                if (messageModel.sender_id == "1")
                 {
                     cardMyMessage.visibility = View.VISIBLE
                     cardOtherMessage.visibility = View.GONE
-                    txtMyMessage.text = messageModel.message
+                    dateOtherMessage.visibility = View.GONE
+                    txtMyMessage.text = messageModel.content
+                    dateMyMessage.text = messageModel.date
                 }
                 else
                 {
                     cardMyMessage.visibility = View.GONE
+                    dateMyMessage.visibility = View.GONE
                     cardOtherMessage.visibility = View.VISIBLE
-                    txtOtherMessage.text = messageModel.message
+                    txtOtherMessage.text = messageModel.content
+                    dateOtherMessage.text = messageModel.date
                 }
             }
         }

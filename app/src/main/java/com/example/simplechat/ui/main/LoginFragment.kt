@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
 
     // Hardcoded validation function for email
     private fun isEmailValid(text: Editable?) : Boolean {
-        return text != null && text.toString() == "jarjit"
+        return text != null && text.toString() == "jarjit@mail.com"
     }
 
 }
