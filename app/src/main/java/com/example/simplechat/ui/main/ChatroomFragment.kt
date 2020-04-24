@@ -20,11 +20,14 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.simplechat.R
+
+
 import com.example.simplechat.models.MessageModel
 import com.example.simplechat.models.UserModel
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.chatroom_fragment.*
 import kotlinx.android.synthetic.main.chatroom_fragment.view.*
 import kotlinx.android.synthetic.main.chatroom_fragment.view.txt_message_box
@@ -33,6 +36,9 @@ class ChatroomFragment : Fragment() {
     companion object {
         fun newInstance() = ChatroomFragment()
     }
+
+
+
     var user: UserModel? = null
     lateinit var txtMessageBox: AppCompatEditText
     lateinit var btnSend: AppCompatImageView
@@ -48,7 +54,11 @@ class ChatroomFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.chatroom_fragment, container, false)
         // Set up the toolbar_menu.
+        // Write a message to the database
+        val database = Firebase.database
+        val myRef = database.getReference("message")
 
+        myRef.setValue("Hello, World!")
         return view
     }
 

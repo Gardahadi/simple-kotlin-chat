@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "117603343073",
+    "firebase_url": "https://chicken-little-269102.firebaseio.com",
+    "project_id": "chicken-little-269102",
+    "storage_bucket": "chicken-little-269102.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117603343073:android:d415c0fe4b824ca81475a0",
+        "android_client_info": {
+          "package_name": "com.example.simplechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117603343073-51et45q11tgalhnhuuvan56fpp55jegm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaN35h5lZ-vWdlQRbwnfwNPbFxt19e73Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117603343073-51et45q11tgalhnhuuvan56fpp55jegm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
