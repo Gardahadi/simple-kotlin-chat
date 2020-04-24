@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.simplechat.R
 import com.example.simplechat.interfaces.NavigationHost
 import kotlinx.android.synthetic.main.login_fragment.*
@@ -29,8 +30,9 @@ class LoginFragment : Fragment() {
         button.setOnClickListener {
             val password = password_edit_text.text!!
             val email = email_edit_text.text!!
+            val toast = Toast.makeText(this.context, "Wrong Credentials", 2)
             if(!isPasswordValid(password) || !isEmailValid(email) ){
-                it.password_text_input.error = "Log-in info is wrong"
+                toast.show()
             } else{
                 // Navigate to Next Activity
                 (activity as NavigationHost).navigateTo(ChatroomFragment(), false)

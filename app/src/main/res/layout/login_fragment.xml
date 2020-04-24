@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:inputType="textPassword"
+                app:errorEnabled="true"
                 android:hint="@string/login_field_2">
 
 
