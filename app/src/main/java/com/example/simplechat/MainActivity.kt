@@ -9,6 +9,9 @@ import com.example.simplechat.ui.main.LoginFragment
 
 class MainActivity : AppCompatActivity(), NavigationHost {
 
+    companion object{
+        
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)

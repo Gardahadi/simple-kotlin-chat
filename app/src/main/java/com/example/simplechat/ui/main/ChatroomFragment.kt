@@ -11,27 +11,36 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Adapter
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.simplechat.R
 import com.example.simplechat.models.MessageModel
+import com.example.simplechat.models.UserModel
+import com.google.android.material.card.MaterialCardView
+import kotlinx.android.synthetic.main.chatroom_fragment.*
 import kotlinx.android.synthetic.main.chatroom_fragment.view.*
+import kotlinx.android.synthetic.main.chatroom_fragment.view.txt_message_box
 
 class ChatroomFragment : Fragment() {
-
+    companion object {
+        fun newInstance() = ChatroomFragment()
+    }
     var user: UserModel? = null
     lateinit var txtMessageBox: AppCompatEditText
     lateinit var btnSend: AppCompatImageView
     lateinit var recyclerMessages: RecyclerView
     lateinit var progressLoading: ProgressBar
 
-    val messagesList = arrayListOf<MessageModel>()
-    var messagesAdapter: ChatMessagesAdapter? = null
+    val messageList = ArrayList<MessageModel>()
+    var messageAdapter : ChatMessagesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,35 +52,41 @@ class ChatroomFragment : Fragment() {
         return view
     }
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(ChatroomViewModel::class.java)
-        // TODO: Use the ViewModel
+        user = UserModel (
+            uid = "1",
+            name = "Mail",
+            status = "Last Active Yesterday",
+            photoUrl = ""
+        )
+    }
 
+    override fun onResume() {
+        super.onResume()
+        setupViews()
+        loadConversationMessages()
     }
 
 
     fun setupViews()
     {
         // Get Views
-        txtMessageBox = findViewById(R.id.txtMessageBox)
-        btnSend = findViewById(R.id.imgSend)
-        recyclerMessages = findViewById(R.id.recyclerMessages)
-        progressLoading = findViewById(R.id.progressLoading)
+        txtMessageBox = txt_message_box
+        btnSend = img_send
+        recyclerMessages = recycler_messages
+        progressLoading = progress_loading
 
         // Toolbar
-        supportActionBar?.apply {
-            title = user?.name
-            subtitle = user?.status
-            setDisplayShowHomeEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
-        }
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
         setUserStatus(user?.status == "online")
 
+
         // Recycler View
-        messagesAdapter = ChatMessagesAdapter()
-        recyclerMessages.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        recyclerMessages.adapter = messagesAdapter
+        messageAdapter = ChatMessagesAdapter()
+        recyclerMessages.layoutManager = LinearLayoutManager(this.context, RecyclerView.VERTICAL, false)
+        recyclerMessages.adapter = messageAdapter
 
         // Message Box
         txtMessageBox.setOnEditorActionListener { v, actionId, event ->
@@ -86,7 +101,9 @@ class ChatroomFragment : Fragment() {
         }
 
         // Send Button
+        val toast = Toast.makeText(this.context, "sent message", 2)
         btnSend.setOnClickListener {
+            toast.show()
             sendMessage(txtMessageBox.text.toString())
         }
     }
@@ -95,11 +112,11 @@ class ChatroomFragment : Fragment() {
     {
         if (isOnline)
         {
-            supportActionBar?.subtitle = Html.fromHtml("<font color='#149214'>online</font>")
+            (activity as AppCompatActivity).supportActionBar?.subtitle = Html.fromHtml("<font color='#149214'>online</font>")
         }
         else
         {
-            supportActionBar?.subtitle = Html.fromHtml("<font color='#575757'>offline</font>")
+            (activity as AppCompatActivity).supportActionBar?.subtitle = Html.fromHtml("<font color='#575757'>offline</font>")
         }
     }
 
@@ -110,10 +127,10 @@ class ChatroomFragment : Fragment() {
                 val receiverID: String = it.uid
                 val messageText = message
 
-                var messageModel = MessageModel(message, true)
-                messagesList.add(messageModel)
-                messagesAdapter?.notifyItemInserted(messagesList.size-1)
-                recyclerMessages.scrollToPosition(messagesList.size-1)
+                val messageModel = MessageModel(message, true)
+                messageList.add(messageModel)
+                messageAdapter?.notifyItemInserted(messageList.size-1)
+                recyclerMessages.scrollToPosition(messageList.size-1)
 
                 // Clear the message box
                 txtMessageBox.setText("")
@@ -140,27 +157,69 @@ class ChatroomFragment : Fragment() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId)
-        {
-            android.R.id.home -> finish()
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     fun loadDummyMessages()
     {
-        messagesList.add(MessageModel("Hi", true))
-        messagesList.add(MessageModel("How are you?", true))
-        messagesList.add(MessageModel("I'm fine", false))
-        messagesList.add(MessageModel("How about ya?", false))
-        messagesList.add(MessageModel("Fine", true))
-        messagesList.add(MessageModel("What ya upto these days?", true))
-        messagesList.add(MessageModel("Same ol' job dude!", false))
-        messagesList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", false))
-        messagesList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", true))
-        messagesAdapter?.notifyDataSetChanged()
+        messageList.add(MessageModel("Hi", true))
+        messageList.add(MessageModel("How are you?", true))
+        messageList.add(MessageModel("I'm fine", false))
+        messageList.add(MessageModel("How about ya?", false))
+        messageList.add(MessageModel("Fine", true))
+        messageList.add(MessageModel("What ya upto these days?", true))
+        messageList.add(MessageModel("Same ol' job dude!", false))
+        messageList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", false))
+        messageList.add(MessageModel("Same ol' job dude! asfa sfasf asfd asfd asf asdf asfd asf asfasf asf asf asf sf safasfdasdf asf asfd asf asdfasdf", true))
+        messageAdapter?.notifyDataSetChanged()
     }
 
+    // Recycler Adapter
+    inner class ChatMessagesAdapter : RecyclerView.Adapter<ChatMessagesAdapter.MessageViewHolder>()
+    {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+            var view = LayoutInflater.from(context).inflate(R.layout.chat_message_content, parent, false)
+            return MessageViewHolder(view)
+        }
+
+        override fun getItemCount(): Int = messageList.size
+
+        override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+            var messageModel = messageList[position]
+            holder.bindItem(messageModel)
+        }
+
+        // View Holder
+        inner class MessageViewHolder : RecyclerView.ViewHolder
+        {
+            var txtMyMessage: AppCompatTextView
+            var txtOtherMessage: AppCompatTextView
+            var cardMyMessage: MaterialCardView
+            var cardOtherMessage: MaterialCardView
+
+            constructor(itemView: View) : super(itemView)
+            {
+                txtMyMessage = itemView.findViewById(R.id.txtMyMessage)
+                txtOtherMessage = itemView.findViewById(R.id.txtOtherMessage)
+                cardMyMessage = itemView.findViewById(R.id.cardChatMyMessage)
+                cardOtherMessage = itemView.findViewById(R.id.cardChatOtherMessage)
+            }
+
+
+            fun bindItem(messageModel: MessageModel)
+            {
+                if (messageModel.isMine)
+                {
+                    cardMyMessage.visibility = View.VISIBLE
+                    cardOtherMessage.visibility = View.GONE
+                    txtMyMessage.text = messageModel.message
+                }
+                else
+                {
+                    cardMyMessage.visibility = View.GONE
+                    cardOtherMessage.visibility = View.VISIBLE
+                    txtOtherMessage.text = messageModel.message
+                }
+            }
+        }
+    }
 
 }
